@@ -2,12 +2,20 @@
 <html lang="en">
 	<head>
 		<title>Test Project</title>
+		<style>
+			* {
+				font-weight: 300;
+				font-family: Roboto;
+			}
+		</style>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Font+Name">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
 
 		<script>
 			jQuery(document).ready(function() {
@@ -47,12 +55,14 @@
 				 */
 				function drawBox(boxData, index) {
 					var container = $('<div class="alert" id="container' + index + '"></div>');
+					var listItem = $('<li id=item' + index + ' class="list-group-item"></li>');
+
 					if (index % 2 == 0) {
-						container.attr("style", "background-color: #d9edf7");
+						listItem.attr("style", "background-color: #d9edf7");
 					} else {
-						container.attr("style", "background-color: #dff0d8");
+						listItem.attr("style", "background-color: #dff0d8");
 					};
-					$("#listOfBoxes").append('<li id=item' + index + ' class="list-group-item"></li>');
+					$("#listOfBoxes").append(listItem);
 					$("#item" + index).append(container);
 					container.append($('<span><label class="control-label">' + boxData.title + '</label></span>'));
 					container.append($('<input type="text" class="form-control" id=input' + index + ' value=' + index + ' placeholder=' + index + '>'));
@@ -142,12 +152,13 @@
 					$("#error").hide();
 				});
 
-				
+				/**
+				 * function for dragging and dropping a box
+				 */
+				//	$("#listOfBoxes").sortable();
 
 			});
-$(function() {
-					$("#listOfBoxes").sortable();
-				});
+
 		</script>
 
 	</head>
@@ -157,7 +168,7 @@ $(function() {
 				<div class="col-md-6" id="column1">
 					Column 1
 					<div class="alert alert-danger fade in" id="error">
-						<strong>Error!</strong> One of the input values is not a numeric value!
+						<strong>Error!</strong> One of the input values is not a positive numeric value!
 						<button class="close">
 							×
 						</button>
