@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Test Project</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+		<script>
+			jQuery(document).ready(function() {
+				$("#error").hide();
+				setTimeout(function() {
+					loadData();
+				}, 2000);
+
+				/**
+				 * loads data from a json file
+				 */
+				function loadData() {
+					$.ajax({
+						url : "data.json",
+						dataType : 'json',
+						success : function(data, textStatus, jqXHR) {
+							drawBoxes(data);
+						},
+						error : function() {
+							alert("error: file cannot be found");
+						}
+					});
+				}
+
+				/**
+				 * draws a box for every json data entry
+				 */
+				function drawBoxes(data) {
+					for (var i = 0; i < data.boxes.length; i++) {
+						drawBox(data.boxes[i], i);
+					}
+				}
+
+				/**
+				 * draws the container, the label and the input fields based on the json data
+				 * the background color of the container alternates
+				 */
+				function drawBox(boxData, index) {
+					var container = $('<div class="alert" id="container' + index + '"></div>');
+					if (index % 2 == 0) {
+						container.attr("style", "background-color: #d9edf7");
+					} else {
+						container.attr("style", "background-color: #dff0d8");
+					};
+					$("#listOfBoxes").append('<li id=item' + index + ' class="list-group-item"></li>');
+					$("#item" + index).append(container);
+					container.append($('<span><label class="control-label">' + boxData.title + '</label></span>'));
+					container.append($('<input type="text" class="form-control" id=input' + index + ' value=' + index + ' placeholder=' + index + '>'));
+				}
+
+				/**
+				 * gets triggered on every input change of an input field
+				 * it checks the current input value an changes the class of the parent element based on the value
+				 * valid inputs are only numeric values
+				 */
+				$("div").on("keyup", "input", function() {
+					var $input = $(this);
+					var $inputValue = $input.val();
+					if (($inputValue === "") || (!isNumber($inputValue))) {
+						setTimeout(function() {
+							$input.parent().addClass("has-error");
+						}, 1000);
+					} else {
+						$input.parent().removeClass("has-error");
+					}
+				});
+
+				/**
+				 * function of the sort button which calls the sort function
+				 */
+				$("#sort-button").click(function() {
+					sortInputs();
+				});
+
+				/**
+				 * sorts the input values in the input fields based on their numeric value
+				 * if the value is not numeric an error is shown
+				 * it updates the sort counter which holds the number of changes
+				 */
+				function sortInputs() {
+					$("#error").hide();
+					var originalListOfInputs = $(".form-control");
+					var sortedListOfInputs = originalListOfInputs;
+					var counter = 0;
+					var changedValues = [];
+					sortedListOfInputs.sort(function(a, b) {
+						var a = $(a).val();
+						var b = $(b).val();
+						if (!isNumber(a) || !isNumber(b)) {
+							$("#error").show();
+							return -1;
+						} else {
+							var val = a - b;
+							if (isNumber(val.toString())) {
+								if ($.inArray(a, changedValues) == -1) {
+									changedValues.push(a);
+								}
+							}
+							return val;
+						}
+					});
+
+					redrawInputs(sortedListOfInputs);
+					counter = changedValues.length;
+					$("#sort-counter").html("counter: " + counter);
+
+				}
+
+				/**
+				 * every input fields gets redrawn in a different container based on the index value
+				 */
+				function redrawInputs(listOfInputs) {
+					for (var i = 0; i < listOfInputs.length; i++) {
+						$("#container" + i).append(listOfInputs[i]);
+					}
+
+				}
+
+				/**
+				 * checks if the a value is a numeric value
+				 */
+				function isNumber(input) {
+					var inputValue = input;
+					var number = inputValue.match(/^[0-9]+$/);
+					return number;
+				}
+
+				/**
+				 * hides the error alert box
+				 */
+				$(".close").click(function() {
+					$("#error").hide();
+				});
+
+				
+
+			});
+$(function() {
+					$("#listOfBoxes").sortable();
+				});
+		</script>
+
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6" id="column1">
+					Column 1
+					<div class="alert alert-danger fade in" id="error">
+						<strong>Error!</strong> One of the input values is not a numeric value!
+						<button class="close">
+							×
+						</button>
+					</div>
+					<ul id="listOfBoxes" class="list-group">
+
+					</ul>
+				</div>
+				<div class="col-md-6" id="column2">
+					Column 2
+					<div class="container">
+						<button type="button" class="btn btn-default" id="sort-button">
+							sort button
+						</button>
+					</div>
+					<div class="container">
+						<label id="sort-counter">counter: </label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
